@@ -56,14 +56,14 @@
             border: 1px solid #666;
             border-radius: 8px;
             padding: 12px;
-            font-size: 14px; /* ★ここを14pxに固定しました */
+            font-size: 14px;
             font-weight: bold;
-            line-height: 1.5; /* 文字拡大に合わせて少し広げました */
+            line-height: 1.5;
             
             display: grid;
             grid-template-columns: auto 1fr; /* 左列（番号）/ 右列（内容） */
             column-gap: 12px;                /* 番号と中身の間の隙間 */
-            row-gap: 16px;                   /* 各番号（①〜⑦）ごとの縦の隙間を微調整 */
+            row-gap: 16px;                   /* 各番号（①〜⑦）ごとの縦の隙間 */
             align-items: start;
         }
 
@@ -94,7 +94,7 @@
         .gaze-color { color: #ff9800; } /* 視線：オレンジ */
         .t-color { color: #1a8cff; } /* タンク：青 */
         .h-color { color: #2eb82e; } /* ヒーラー：緑 */
-        .dps-color { color: #ff3333; } /* DPS：赤 */
+        .d-color { color: #ff3333; } /* D：赤 */
 
         .reset {
             width: 100%;
@@ -175,137 +175,4 @@ function renderUI(){
         btn.classList.toggle("active", !!val);
 
         if(id === "t1"){
-            btn.textContent = "水雷（" + (s.firstThunderEarly ? "早" : "遅") + "）";
-        } 
-        else if(id === "f1"){
-            btn.textContent = s.f1 ? "真" : "偽";
-        }
-        else if(id === "f2"){
-            btn.textContent = s.f2 ? "真" : "偽";
-        }
-        else {
-            btn.textContent = btn.dataset.label + (val ? "（真）" : "（偽）");
-        }
-    });
-}
-
-// =========================
-// 計算
-// =========================
-function calc(){
-    const f1 = s.f1;
-    const f2 = s.f2;
-
-    // 色付け用の共通HTMLタグ定義
-    const txtWater = '<span class="water-color">水</span>';
-    const txtThunder = '<span class="thunder-color">雷</span>';
-    const txtGazeText = '<span class="gaze-color">視線</span>';
-    const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
-    const txtDPS = '<span class="dps-color">DPS</span>';
-
-    // 各行動のテキストを完全に1行ずつバラバラに定義
-    const line_water_share   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
-    const line_water_spread  = `<span class="line-text">${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）</span>`;
-    const line_thunder_share  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
-    const line_thunder_spread = `<span class="line-text">${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）</span>`;
-
-    const line_water_share_gc2   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
-    const line_water_spread_gc2  = `<span class="line-text">${txtWater}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
-    const line_thunder_share_gc2  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
-    const line_thunder_spread_gc2 = `<span class="line-text">${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
-
-    let r1_html, r4_html;
-
-    // GC1の処理（水雷の早・遅の判定）
-    if (s.firstThunderEarly) {
-        r1_html = f1 ? (line_water_share + line_thunder_spread) : (line_water_spread + line_thunder_share);
-        r4_html = f2 ? (line_water_share_gc2 + line_thunder_spread_gc2) : (line_water_spread_gc2 + line_thunder_share_gc2);
-    } else {
-        r1_html = f2 ? (line_water_share + line_thunder_spread) : (line_water_spread + line_thunder_share);
-        r4_html = f1 ? (line_water_share_gc2 + line_thunder_spread_gc2) : (line_water_spread_gc2 + line_thunder_share_gc2);
-    }
-
-    const v1 = f1 ? "見ない" : "見る";
-    const v4 = f2 ? "見ない" : "見る";
-
-    const k5 = s.c5 ? "タケノコ" : "ドーナツ";
-    const k6 = s.c6 ? "ドーナツ" : "タケノコ";
-
-    const j8 = (s.c8 === s.d8) ? "踏まない" : "直線踏む";
-    const j9 = (s.c9 === s.d9) ? "踏まない" : "扇踏む";
-
-    let l1;
-
-    if(j8 === "踏まない" && j9 === "踏まない"){
-        l1 = "踏まない";
-    }
-    else if(j8 !== "踏まない" && j9 !== "踏まない"){
-        l1 = "どっちも踏む";
-    }
-    else {
-        l1 = (j8 === "踏まない") ? j9 : j8;
-    }
-
-    // 加速度判定
-    const speed1_gaze = f1 ? "動かない" : "動く";
-    const speed1_other = f2 ? "動かない" : "動く";
-    const speed2_gaze = f2 ? "動かない" : "動く";
-    const speed2_other = f1 ? "動かない" : "動く";
-
-    const text_gc1 = `<span class="line-text">（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）</span>`;
-    const text_gc2 = `<span class="line-text">（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）</span>`;
-
-    // 全ての行を「result-content」という右側専用の巨大な列の中に流し込む構造に変更
-    document.getElementById("result").innerHTML = `
-        <div class="result-num">①</div><div class="result-content">${r1_html}${text_gc1}</div>
-        <div class="result-num">②</div><div class="result-content"><span class="line-text">${v1}</span></div>
-        <div class="result-num">③</div><div class="result-content"><span class="line-text">${k5}</span></div>
-        <div class="result-num">④</div><div class="result-content">${r4_html}${text_gc2}</div>
-        <div class="result-num">⑤</div><div class="result-content"><span class="line-text">${v4}</span></div>
-        <div class="result-num">⑥</div><div class="result-content"><span class="line-text">${k6}</span></div>
-        <div class="result-num">⑦</div><div class="result-content"><span class="line-text">${l1}</span></div>
-    `;
-}
-
-// =========================
-// 入力
-// =========================
-document.querySelectorAll(".btn").forEach(btn=>{
-    btn.addEventListener("pointerdown",(e)=>{
-        e.preventDefault();
-        const id = btn.dataset.id;
-
-        if(id === "t1"){
-            s.firstThunderEarly = !s.firstThunderEarly;
-        } else {
-            s[id] = !s[id];
-        }
-
-        renderUI();
-        calc();
-    });
-});
-
-// =========================
-// リセット
-// =========================
-function resetAll(){
-    Object.keys(s).forEach(k=>{
-        if(typeof s[k] === "boolean"){
-            s[k] = true;
-        }
-    });
-
-    s.firstThunderEarly = true;
-
-    renderUI();
-    calc();
-}
-
-// 初期表示
-renderUI();
-calc();
-</script>
-
-</body>
-</html>
+            btn.textContent = "水雷（" + (s.firstThunderEarly ? "早" : "遅")
