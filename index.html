@@ -61,6 +61,11 @@
             line-height: 1.4;
         }
 
+        /* ロールカラーの色定義 */
+        .t-color { color: #1a8cff; } /* タンク：青 */
+        .h-color { color: #2eb82e; } /* ヒーラー：緑 */
+        .dps-color { color: #ff3333; } /* DPS：赤 */
+
         .reset {
             width: 100%;
             margin-top: 12px;
@@ -163,20 +168,22 @@ function calc(){
 
     let r1, r4;
 
-    // 定義通りの表記を設定（改行を含む2行構成）
-    const macro1_true  = "水：頭割り（TH：12時 DPS：6時）\n雷：散開（TH：2時or10時 DPS：4時or8時）";
-    const macro1_false = "水：散開（TH：2時or10時 DPS：4時or8時）\n雷：頭割り（TH：12時 DPS：6時）";
+    // 色付け用の共通HTMLタグ定義
+    const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
+    const txtDPS = '<span class="dps-color">DPS</span>';
 
-    const macro4_true  = "水：頭割り（TH：A DPS：C）\n雷：散開（TH：D DPS：B）";
-    const macro4_false = "水：散開（TH：D DPS：B）\n雷：頭割り（TH：A DPS：C）";
+    // マクロ文字列に色付けタグを組み込み
+    const macro1_true  = `水：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n雷：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
+    const macro1_false = `水：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n雷：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
+
+    const macro4_true  = `水：頭割り（${txtTH}：A ${txtDPS}：C）\n雷：散開（${txtTH}：D ${txtDPS}：B）`;
+    const macro4_false = `水：散開（${txtTH}：D ${txtDPS}：B）\n雷：頭割り（${txtTH}：A ${txtDPS}：C）`;
 
     // GC1の処理（水雷の早・遅の判定）
     if (s.firstThunderEarly) {
-        // 早：GC1がf1の真偽、GC2がf2の真偽で判定
         r1 = f1 ? macro1_true : macro1_false;
         r4 = f2 ? macro4_true : macro4_false;
     } else {
-        // 遅：GC1がf2の真偽、GC2がf1の真偽で判定
         r1 = f2 ? macro1_true : macro1_false;
         r4 = f1 ? macro4_true : macro4_false;
     }
@@ -211,7 +218,8 @@ function calc(){
     const text_gc1 = `\n（加速度 ⇒ 視線：${speed1_gaze} / 他：${speed1_other}）`;
     const text_gc2 = `\n（加速度 ⇒ 視線：${speed2_gaze} / 他：${speed2_other}）`;
 
-    document.getElementById("result").textContent =
+    // innerHTMLに変更することで色付けタグを反映させる
+    document.getElementById("result").innerHTML =
 `① ${r1}${text_gc1}
 ② ${v1}
 ③ ${k5}
