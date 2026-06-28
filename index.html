@@ -212,3 +212,100 @@ function calc(){
     const line_water_share_gc2  = `<span class="line-text">${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
     const line_water_spread_gc2 = `<span class="line-text">${txtWater}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
     const line_thunder_share_gc2  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
+    const line_thunder_spread_gc2 = `<span class="line-text">${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
+
+    let r1_html, r4_html;
+
+    // GC1の処理（水雷の早・遅の判定）
+    if (s.firstThunderEarly) {
+        r1_html = f1 ? (line_water_share + line_thunder_spread) : (line_water_spread + line_thunder_share);
+        r4_html = f2 ? (line_water_share_gc2 + line_thunder_spread_gc2) : (line_water_spread_gc2 + line_thunder_share_gc2);
+    } else {
+        r1_html = f2 ? (line_water_share + line_thunder_spread) : (line_water_spread + line_thunder_share);
+        r4_html = f1 ? (line_water_share_gc2 + line_thunder_spread_gc2) : (line_water_spread_gc2 + line_thunder_share_gc2);
+    }
+
+    const v1 = f1 ? "見ない" : "見る";
+    const v4 = f2 ? "見ない" : "見る";
+
+    const k5 = s.c5 ? "タケノコ" : "ドーナツ";
+    const k6 = s.c6 ? "ドーナツ" : "タケノコ";
+
+    const j8 = (s.c8 === s.d8) ? "踏まない" : "直線踏む";
+    const j9 = (s.c9 === s.d9) ? "踏まない" : "扇踏む";
+
+    let l1;
+
+    if(j8 === "踏まない" && j9 === "踏まない"){
+        l1 = "踏まない";
+    }
+    else if(j8 !== "踏まない" && j9 !== "踏まない"){
+        l1 = "どっちも踏む";
+    }
+    else {
+        l1 = (j8 === "踏まない") ? j9 : j8;
+    }
+
+    // 加速度判定
+    const speed1_gaze = f1 ? "動かない" : "動く";
+    const speed1_other = f2 ? "動かない" : "動く";
+    const speed2_gaze = f2 ? "動かない" : "動く";
+    const speed2_other = f1 ? "動かない" : "動く";
+
+    const text_gc1 = `<span class="line-text">（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）</span>`;
+    const text_gc2 = `<span class="line-text">（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）</span>`;
+
+    // 全ての行を「result-content」という右側専用の巨大な列の中に流し込む構造に変更
+    document.getElementById("result").innerHTML = `
+        <div class="result-num">①</div><div class="result-content">${r1_html}${text_gc1}</div>
+        <div class="result-num">②</div><div class="result-content"><span class="line-text">${v1}</span></div>
+        <div class="result-num">③</div><div class="result-content"><span class="line-text">${k5}</span></div>
+        <div class="result-num">④</div><div class="result-content">${r4_html}${text_gc2}</div>
+        <div class="result-num">⑤</div><div class="result-content"><span class="line-text">${v4}</span></div>
+        <div class="result-num">⑥</div><div class="result-content"><span class="line-text">${k6}</span></div>
+        <div class="result-num">⑦</div><div class="result-content"><span class="line-text">${l1}</span></div>
+    `;
+}
+
+// =========================
+// 入力
+// =========================
+document.querySelectorAll(".btn").forEach(btn=>{
+    btn.addEventListener("pointerdown",(e)=>{
+        e.preventDefault();
+        const id = btn.dataset.id;
+
+        if(id === "t1"){
+            s.firstThunderEarly = !s.firstThunderEarly;
+        } else {
+            s[id] = !s[id];
+        }
+
+        renderUI();
+        calc();
+    });
+});
+
+// =========================
+// リセット
+// =========================
+function resetAll(){
+    Object.keys(s).forEach(k=>{
+        if(typeof s[k] === "boolean"){
+            s[k] = true;
+        }
+    });
+
+    s.firstThunderEarly = true;
+
+    renderUI();
+    calc();
+}
+
+// 初期表示
+renderUI();
+calc();
+</script>
+
+</body>
+</html>
