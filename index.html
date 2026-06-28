@@ -61,9 +61,11 @@
             line-height: 1.4;
         }
 
-        /* ロールカラーの色定義 */
-        .t-color { color: #1a8cff; } /* T：青 */
-        .h-color { color: #2eb82e; } /* H：緑 */
+        /* 文字色・ロールカラーの色定義 */
+        .water-color { color: #4fc3f7; } /* 水：水色 */
+        .thunder-color { color: #b388ff; } /* 雷：紫色 */
+        .t-color { color: #1a8cff; } /* タンク：青 */
+        .h-color { color: #2eb82e; } /* ヒーラー：緑 */
         .dps-color { color: #ff3333; } /* DPS：赤 */
 
         .reset {
@@ -169,15 +171,17 @@ function calc(){
     let r1, r4;
 
     // 色付け用の共通HTMLタグ定義
+    const txtWater = '<span class="water-color">水</span>';
+    const txtThunder = '<span class="thunder-color">雷</span>';
     const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
     const txtDPS = '<span class="dps-color">DPS</span>';
 
     // マクロ文字列に色付けタグを組み込み
-    const macro1_true  = `水：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n雷：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
-    const macro1_false = `水：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n雷：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
+    const macro1_true  = `${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
+    const macro1_false = `${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
 
-    const macro4_true  = `水：頭割り（${txtTH}：A ${txtDPS}：C）\n雷：散開（${txtTH}：D ${txtDPS}：B）`;
-    const macro4_false = `水：散開（${txtTH}：D ${txtDPS}：B）\n雷：頭割り（${txtTH}：A ${txtDPS}：C）`;
+    const macro4_true  = `${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）\n${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）`;
+    const macro4_false = `${txtWater}：散開（${txtTH}：D ${txtDPS}：B）\n${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）`;
 
     // GC1の処理（水雷の早・遅の判定）
     if (s.firstThunderEarly) {
@@ -218,7 +222,7 @@ function calc(){
     const text_gc1 = `\n（加速度 ⇒ 視線：${speed1_gaze} / 他：${speed1_other}）`;
     const text_gc2 = `\n（加速度 ⇒ 視線：${speed2_gaze} / 他：${speed2_other}）`;
 
-    // innerHTMLに変更することで色付けタグを反映させる
+    // 結果出力
     document.getElementById("result").innerHTML =
 `① ${r1}${text_gc1}
 ② ${v1}
