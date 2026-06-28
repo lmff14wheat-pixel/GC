@@ -64,6 +64,7 @@
         /* 文字色・ロールカラーの色定義 */
         .water-color { color: #4fc3f7; } /* 水：水色 */
         .thunder-color { color: #b388ff; } /* 雷：紫色 */
+        .gaze-color { color: #ff9800; } /* 視線：オレンジ */
         .t-color { color: #1a8cff; } /* タンク：青 */
         .h-color { color: #2eb82e; } /* ヒーラー：緑 */
         .dps-color { color: #ff3333; } /* DPS：赤 */
@@ -173,6 +174,7 @@ function calc(){
     // 色付け用の共通HTMLタグ定義
     const txtWater = '<span class="water-color">水</span>';
     const txtThunder = '<span class="thunder-color">雷</span>';
+    const txtGazeText = '<span class="gaze-color">視線</span>';
     const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
     const txtDPS = '<span class="dps-color">DPS</span>';
 
@@ -219,8 +221,9 @@ function calc(){
     const speed2_gaze = f2 ? "動かない" : "動く";
     const speed2_other = f1 ? "動かない" : "動く";
 
-    const text_gc1 = `\n（加速度 ⇒ 視線：${speed1_gaze} / 他：${speed1_other}）`;
-    const text_gc2 = `\n（加速度 ⇒ 視線：${speed2_gaze} / 他：${speed2_other}）`;
+    // 括弧内の「視線」の文字をオレンジ化
+    const text_gc1 = `\n（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）`;
+    const text_gc2 = `\n（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）`;
 
     // 結果出力
     document.getElementById("result").innerHTML =
