@@ -49,7 +49,7 @@
             color: #fff;
         }
 
-        /* 箇条書きを綺麗にそろえるためのスタイル調整 */
+        /* 箇条書きを完璧に整列させるグリッドレイアウト */
         .result {
             margin-top: 12px;
             background: #000;
@@ -58,17 +58,33 @@
             padding: 12px;
             font-size: clamp(14px, 2.5vh, 28px);
             font-weight: bold;
-            line-height: 1.5;
+            line-height: 1.4;
             
-            /* グリッドレイアウトで文頭を完全ロック */
             display: grid;
-            grid-template-columns: auto 1fr; /* 左側（①など）の幅を自動、右側を全幅に */
-            column-gap: 8px;                 /* 番号と本文の間のすきま */
-            row-gap: 12px;                   /* 行同士の縦のすきま */
+            grid-template-columns: auto 1fr; /* 左列（番号）/ 右列（内容） */
+            column-gap: 12px;                /* 番号と中身の間の隙間 */
+            row-gap: 14px;                   /* 各番号（①〜⑦）ごとの縦の隙間 */
+            align-items: start;
         }
 
-        /* 改行テキスト（白文字部分）の表示を保持するための設定 */
+        /* 番号（①〜⑦）が座る左側のボックス */
+        .result-num {
+            grid-column: 1;
+            white-space: nowrap;
+        }
+
+        /* 内容（水・雷・加速度など）が収まる右側のボックス */
         .result-content {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column; /* 内部の要素を上から下に縦並びにする */
+            gap: 4px;               /* 水・雷・加速度の行同士の隙間 */
+            margin: 0;
+        }
+
+        /* 各テキスト行の折り返し設定 */
+        .line-text {
+            display: block;
             white-space: pre-wrap;
         }
 
@@ -180,8 +196,6 @@ function calc(){
     const f1 = s.f1;
     const f2 = s.f2;
 
-    let r1, r4;
-
     // 色付け用の共通HTMLタグ定義
     const txtWater = '<span class="water-color">水</span>';
     const txtThunder = '<span class="thunder-color">雷</span>';
@@ -189,103 +203,12 @@ function calc(){
     const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
     const txtDPS = '<span class="dps-color">DPS</span>';
 
-    // マクロ文字列に色付けタグを組み込み
-    const macro1_true  = `${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
-    const macro1_false = `${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
+    // 各行動のテキストを完全に1行ずつバラバラに定義
+    const line_water_share  = `<span class="line-text">${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
+    const line_water_spread = `<span class="line-text">${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）</span>`;
+    const line_thunder_share  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
+    const line_thunder_spread = `<span class="line-text">${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）</span>`;
 
-    const macro4_true  = `${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）\n${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）`;
-    const macro4_false = `${txtWater}：散開（${txtTH}：D ${txtDPS}：B）\n${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）`;
-
-    // GC1の処理（水雷の早・遅の判定）
-    if (s.firstThunderEarly) {
-        r1 = f1 ? macro1_true : macro1_false;
-        r4 = f2 ? macro4_true : macro4_false;
-    } else {
-        r1 = f2 ? macro1_true : macro1_false;
-        r4 = f1 ? macro4_true : macro4_false;
-    }
-
-    const v1 = f1 ? "見ない" : "見る";
-    const v4 = f2 ? "見ない" : "見る";
-
-    const k5 = s.c5 ? "タケノコ" : "ドーナツ";
-    const k6 = s.c6 ? "ドーナツ" : "タケノコ";
-
-    const j8 = (s.c8 === s.d8) ? "踏まない" : "直線踏む";
-    const j9 = (s.c9 === s.d9) ? "踏まない" : "扇踏む";
-
-    let l1;
-
-    if(j8 === "踏まない" && j9 === "踏まない"){
-        l1 = "踏まない";
-    }
-    else if(j8 !== "踏まない" && j9 !== "踏まない"){
-        l1 = "どっちも踏む";
-    }
-    else {
-        l1 = (j8 === "踏まない") ? j9 : j8;
-    }
-
-    // 加速度判定
-    const speed1_gaze = f1 ? "動かない" : "動く";
-    const speed1_other = f2 ? "動かない" : "動く";
-    const speed2_gaze = f2 ? "動かない" : "動く";
-    const speed2_other = f1 ? "動かない" : "動く";
-
-    const text_gc1 = `\n（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）`;
-    const text_gc2 = `\n（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）`;
-
-    // 箇条書き状に綺麗に配置するためのHTML組み立て
-    document.getElementById("result").innerHTML = `
-        <div>①</div><div class="result-content">${r1}${text_gc1}</div>
-        <div>②</div><div class="result-content">${v1}</div>
-        <div>③</div><div class="result-content">${k5}</div>
-        <div>④</div><div class="result-content">${r4}${text_gc2}</div>
-        <div>⑤</div><div class="result-content">${v4}</div>
-        <div>⑥</div><div class="result-content">${k6}</div>
-        <div>⑦</div><div class="result-content">${l1}</div>
-    `;
-}
-
-// =========================
-// 入力
-// =========================
-document.querySelectorAll(".btn").forEach(btn=>{
-    btn.addEventListener("pointerdown",(e)=>{
-        e.preventDefault();
-        const id = btn.dataset.id;
-
-        if(id === "t1"){
-            s.firstThunderEarly = !s.firstThunderEarly;
-        } else {
-            s[id] = !s[id];
-        }
-
-        renderUI();
-        calc();
-    });
-});
-
-// =========================
-// リセット
-// =========================
-function resetAll(){
-    Object.keys(s).forEach(k=>{
-        if(typeof s[k] === "boolean"){
-            s[k] = true;
-        }
-    });
-
-    s.firstThunderEarly = true;
-
-    renderUI();
-    calc();
-}
-
-// 初期表示
-renderUI();
-calc();
-</script>
-
-</body>
-</html>
+    const line_water_share_gc2  = `<span class="line-text">${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
+    const line_water_spread_gc2 = `<span class="line-text">${txtWater}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
+    const line_thunder_share_gc2  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
