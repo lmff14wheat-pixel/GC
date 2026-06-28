@@ -49,7 +49,7 @@
             color: #fff;
         }
 
-        /* 箇条書きを綺麗にそろえるためのスタイル調整 */
+        /* 箇条書きを完璧にそろえるためのグリッド設定 */
         .result {
             margin-top: 12px;
             background: #000;
@@ -58,18 +58,33 @@
             padding: 12px;
             font-size: clamp(14px, 2.5vh, 28px);
             font-weight: bold;
-            line-height: 1.5;
+            line-height: 1.4;
             
-            /* グリッドレイアウトで文頭を完全ロック */
             display: grid;
-            grid-template-columns: auto 1fr; /* 左側（①など）の幅を自動、右側を全幅に */
-            column-gap: 8px;                 /* 番号と本文の間のすきま */
-            row-gap: 12px;                   /* 行同士の縦のすきま */
+            grid-template-columns: auto 1fr; /* 左側（番号）は自動、右側（中身）は広げる */
+            column-gap: 12px;                /* 番号と中身の間のスペース */
+            row-gap: 14px;                   /* 箇条書きの項目ごとの縦の隙間 */
+            align-items: start;
         }
 
-        /* 改行テキスト（白文字部分）の表示を保持するための設定 */
+        /* 番号（①〜⑦）のスタイル */
+        .result-num {
+            grid-column: 1;
+            white-space: nowrap;
+        }
+
+        /* 中身のテキストのスタイル */
         .result-content {
-            white-space: pre-wrap;
+            grid-column: 2;
+            white-space: pre-wrap; /* 内部の改行（水と雷の2行分け）を有効にする */
+            margin: 0;
+        }
+
+        /* 加速度用の1段下がった補足テキスト */
+        .speed-text {
+            display: block;
+            margin-top: 4px;
+            font-weight: bold;
         }
 
         /* 文字色・ロールカラーの色定義 */
@@ -146,146 +161,4 @@ const s = {
 // UI同期
 // =========================
 function renderUI(){
-    document.querySelectorAll(".btn").forEach(btn=>{
-        const id = btn.dataset.id;
-        let val = false;
-
-        if(id === "t1"){
-            val = s.firstThunderEarly;
-        } else {
-            val = s[id];
-        }
-
-        btn.classList.toggle("active", !!val);
-
-        if(id === "t1"){
-            btn.textContent = "水雷（" + (s.firstThunderEarly ? "早" : "遅") + "）";
-        } 
-        else if(id === "f1"){
-            btn.textContent = s.f1 ? "真" : "偽";
-        }
-        else if(id === "f2"){
-            btn.textContent = s.f2 ? "真" : "偽";
-        }
-        else {
-            btn.textContent = btn.dataset.label + (val ? "（真）" : "（偽）");
-        }
-    });
-}
-
-// =========================
-// 計算
-// =========================
-function calc(){
-    const f1 = s.f1;
-    const f2 = s.f2;
-
-    let r1, r4;
-
-    // 色付け用の共通HTMLタグ定義
-    const txtWater = '<span class="water-color">水</span>';
-    const txtThunder = '<span class="thunder-color">雷</span>';
-    const txtGazeText = '<span class="gaze-color">視線</span>';
-    const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
-    const txtDPS = '<span class="dps-color">DPS</span>';
-
-    // マクロ文字列に色付けタグを組み込み
-    const macro1_true  = `${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
-    const macro1_false = `${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
-
-    const macro4_true  = `${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）\n${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）`;
-    const macro4_false = `${txtWater}：散開（${txtTH}：D ${txtDPS}：B）\n${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）`;
-
-    // GC1の処理（水雷の早・遅の判定）
-    if (s.firstThunderEarly) {
-        r1 = f1 ? macro1_true : macro1_false;
-        r4 = f2 ? macro4_true : macro4_false;
-    } else {
-        r1 = f2 ? macro1_true : macro1_false;
-        r4 = f1 ? macro4_true : macro4_false;
-    }
-
-    const v1 = f1 ? "見ない" : "見る";
-    const v4 = f2 ? "見ない" : "見る";
-
-    const k5 = s.c5 ? "タケノコ" : "ドーナツ";
-    const k6 = s.c6 ? "ドーナツ" : "タケノコ";
-
-    const j8 = (s.c8 === s.d8) ? "踏まない" : "直線踏む";
-    const j9 = (s.c9 === s.d9) ? "踏まない" : "扇踏む";
-
-    let l1;
-
-    if(j8 === "踏まない" && j9 === "踏まない"){
-        l1 = "踏まない";
-    }
-    else if(j8 !== "踏まない" && j9 !== "踏まない"){
-        l1 = "どっちも踏む";
-    }
-    else {
-        l1 = (j8 === "踏まない") ? j9 : j8;
-    }
-
-    // 加速度判定
-    const speed1_gaze = f1 ? "動かない" : "動く";
-    const speed1_other = f2 ? "動かない" : "動く";
-    const speed2_gaze = f2 ? "動かない" : "動く";
-    const speed2_other = f1 ? "動かない" : "動く";
-
-    const text_gc1 = `\n（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）`;
-    const text_gc2 = `\n（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）`;
-
-    // 箇条書き状に綺麗に配置するためのHTML組み立て
-    document.getElementById("result").innerHTML = `
-        <div>①</div><div class="result-content">${r1}${text_gc1}</div>
-        <div>②</div><div class="result-content">${v1}</div>
-        <div>③</div><div class="result-content">${k5}</div>
-        <div>④</div><div class="result-content">${r4}${text_gc2}</div>
-        <div>⑤</div><div class="result-content">${v4}</div>
-        <div>⑥</div><div class="result-content">${k6}</div>
-        <div>⑦</div><div class="result-content">${l1}</div>
-    `;
-}
-
-// =========================
-// 入力
-// =========================
-document.querySelectorAll(".btn").forEach(btn=>{
-    btn.addEventListener("pointerdown",(e)=>{
-        e.preventDefault();
-        const id = btn.dataset.id;
-
-        if(id === "t1"){
-            s.firstThunderEarly = !s.firstThunderEarly;
-        } else {
-            s[id] = !s[id];
-        }
-
-        renderUI();
-        calc();
-    });
-});
-
-// =========================
-// リセット
-// =========================
-function resetAll(){
-    Object.keys(s).forEach(k=>{
-        if(typeof s[k] === "boolean"){
-            s[k] = true;
-        }
-    });
-
-    s.firstThunderEarly = true;
-
-    renderUI();
-    calc();
-}
-
-// 初期表示
-renderUI();
-calc();
-</script>
-
-</body>
-</html>
+    document.querySelectorAll
