@@ -49,7 +49,7 @@
             color: #fff;
         }
 
-        /* 箇条書きを完璧にそろえるためのグリッド設定 */
+        /* 箇条書きを綺麗にそろえるためのスタイル調整 */
         .result {
             margin-top: 12px;
             background: #000;
@@ -58,33 +58,18 @@
             padding: 12px;
             font-size: clamp(14px, 2.5vh, 28px);
             font-weight: bold;
-            line-height: 1.4;
+            line-height: 1.5;
             
+            /* グリッドレイアウトで文頭を完全ロック */
             display: grid;
-            grid-template-columns: auto 1fr; /* 左側（番号）は自動、右側（中身）は広げる */
-            column-gap: 12px;                /* 番号と中身の間のスペース */
-            row-gap: 14px;                   /* 箇条書きの項目ごとの縦の隙間 */
-            align-items: start;
+            grid-template-columns: auto 1fr; /* 左側（①など）の幅を自動、右側を全幅に */
+            column-gap: 8px;                 /* 番号と本文の間のすきま */
+            row-gap: 12px;                   /* 行同士の縦のすきま */
         }
 
-        /* 番号（①〜⑦）のスタイル */
-        .result-num {
-            grid-column: 1;
-            white-space: nowrap;
-        }
-
-        /* 中身のテキストのスタイル */
+        /* 改行テキスト（白文字部分）の表示を保持するための設定 */
         .result-content {
-            grid-column: 2;
-            white-space: pre-wrap; /* 内部の改行（水と雷の2行分け）を有効にする */
-            margin: 0;
-        }
-
-        /* 加速度用の1段下がった補足テキスト */
-        .speed-text {
-            display: block;
-            margin-top: 4px;
-            font-weight: bold;
+            white-space: pre-wrap;
         }
 
         /* 文字色・ロールカラーの色定義 */
@@ -204,7 +189,7 @@ function calc(){
     const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
     const txtDPS = '<span class="dps-color">DPS</span>';
 
-    // マクロ文字列（水と雷の間の改行コード \n は維持）
+    // マクロ文字列に色付けタグを組み込み
     const macro1_true  = `${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）\n${txtThunder}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）`;
     const macro1_false = `${txtWater}：散開（${txtTH}：2時or10時 ${txtDPS}：4時or8時）\n${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）`;
 
@@ -247,19 +232,18 @@ function calc(){
     const speed2_gaze = f2 ? "動かない" : "動く";
     const speed2_other = f1 ? "動かない" : "動く";
 
-    // 文頭の不要な改行を取り除き、専用のクラス(speed-text)で包む
-    const text_gc1 = `<span class="speed-text">（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）</span>`;
-    const text_gc2 = `<span class="speed-text">（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）</span>`;
+    const text_gc1 = `\n（加速度 ⇒ ${txtGazeText}：${speed1_gaze} / 他：${speed1_other}）`;
+    const text_gc2 = `\n（加速度 ⇒ ${txtGazeText}：${speed2_gaze} / 他：${speed2_other}）`;
 
-    // グリッド形式でHTMLを出力（①や④の真横に、水・雷・加速度が綺麗に縦一列で並びます）
+    // 箇条書き状に綺麗に配置するためのHTML組み立て
     document.getElementById("result").innerHTML = `
-        <div class="result-num">①</div><div class="result-content">${r1}${text_gc1}</div>
-        <div class="result-num">②</div><div class="result-content">${v1}</div>
-        <div class="result-num">③</div><div class="result-content">${k5}</div>
-        <div class="result-num">④</div><div class="result-content">${r4}${text_gc2}</div>
-        <div class="result-num">⑤</div><div class="result-content">${v4}</div>
-        <div class="result-num">⑥</div><div class="result-content">${k6}</div>
-        <div class="result-num">⑦</div><div class="result-content">${l1}</div>
+        <div>①</div><div class="result-content">${r1}${text_gc1}</div>
+        <div>②</div><div class="result-content">${v1}</div>
+        <div>③</div><div class="result-content">${k5}</div>
+        <div>④</div><div class="result-content">${r4}${text_gc2}</div>
+        <div>⑤</div><div class="result-content">${v4}</div>
+        <div>⑥</div><div class="result-content">${k6}</div>
+        <div>⑦</div><div class="result-content">${l1}</div>
     `;
 }
 
