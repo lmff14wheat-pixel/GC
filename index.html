@@ -56,14 +56,14 @@
             border: 1px solid #666;
             border-radius: 8px;
             padding: 12px;
-            font-size: 14px;
+            font-size: 14px; /* ★ここを14pxに固定しました */
             font-weight: bold;
-            line-height: 1.5;
+            line-height: 1.5; /* 文字拡大に合わせて少し広げました */
             
             display: grid;
             grid-template-columns: auto 1fr; /* 左列（番号）/ 右列（内容） */
             column-gap: 12px;                /* 番号と中身の間の隙間 */
-            row-gap: 16px;                   /* 各番号（①〜⑦）ごとの縦の隙間 */
+            row-gap: 16px;                   /* 各番号（①〜⑦）ごとの縦の隙間を微調整 */
             align-items: start;
         }
 
@@ -94,7 +94,7 @@
         .gaze-color { color: #ff9800; } /* 視線：オレンジ */
         .t-color { color: #1a8cff; } /* タンク：青 */
         .h-color { color: #2eb82e; } /* ヒーラー：緑 */
-        .d-color { color: #ff3333; } /* D：赤 */
+        .dps-color { color: #ff3333; } /* DPS：赤 */
 
         .reset {
             width: 100%;
@@ -201,18 +201,18 @@ function calc(){
     const txtThunder = '<span class="thunder-color">雷</span>';
     const txtGazeText = '<span class="gaze-color">視線</span>';
     const txtTH = '<span class="t-color">T</span><span class="h-color">H</span>';
-    const txtD = '<span class="d-color">D</span>';
+    const txtDPS = '<span class="dps-color">DPS</span>';
 
     // 各行動のテキストを完全に1行ずつバラバラに定義
-    const line_water_share   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：12時 ${txtD}：6時）</span>`;
-    const line_water_spread  = `<span class="line-text">${txtWater}：散開（${txtTH}：2時or10時 ${txtD}：4時or8時）</span>`;
-    const line_thunder_share  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：12時 ${txtD}：6時）</span>`;
-    const line_thunder_spread = `<span class="line-text">${txtThunder}：散開（${txtTH}：2時or10時 ${txtD}：4時or8時）</span>`;
+    const line_water_share   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
+    const line_water_spread  = `<span class="line-text">${txtWater}：散開（${txtTH}：2時10時 ${txtDPS}：4時8時）</span>`;
+    const line_thunder_share  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：12時 ${txtDPS}：6時）</span>`;
+    const line_thunder_spread = `<span class="line-text">${txtThunder}：散開（${txtTH}：2時10時 ${txtDPS}：4時8時）</span>`;
 
-    const line_water_share_gc2   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：A ${txtD}：C）</span>`;
-    const line_water_spread_gc2  = `<span class="line-text">${txtWater}：散開（${txtTH}：D ${txtD}：B）</span>`;
-    const line_thunder_share_gc2  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：A ${txtD}：C）</span>`;
-    const line_thunder_spread_gc2 = `<span class="line-text">${txtThunder}：散開（${txtTH}：D ${txtD}：B）</span>`;
+    const line_water_share_gc2   = `<span class="line-text">${txtWater}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
+    const line_water_spread_gc2  = `<span class="line-text">${txtWater}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
+    const line_thunder_share_gc2  = `<span class="line-text">${txtThunder}：頭割り（${txtTH}：A ${txtDPS}：C）</span>`;
+    const line_thunder_spread_gc2 = `<span class="line-text">${txtThunder}：散開（${txtTH}：D ${txtDPS}：B）</span>`;
 
     let r1_html, r4_html;
 
