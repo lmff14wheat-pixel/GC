@@ -134,45 +134,4 @@ function renderUI(){
         if(id === "t1"){
             val = s.firstThunderEarly;
         } else {
-            val = s[id];
-        }
-
-        btn.classList.toggle("active", !!val);
-
-        if(id === "t1"){
-            btn.textContent = "水雷（" + (s.firstThunderEarly ? "早" : "遅") + "）";
-        } 
-        else if(id === "f1"){
-            btn.textContent = s.f1 ? "真" : "偽";
-        }
-        else if(id === "f2"){
-            btn.textContent = s.f2 ? "真" : "偽";
-        }
-        else {
-            btn.textContent = btn.dataset.label + (val ? "（真）" : "（偽）");
-        }
-    });
-}
-
-// =========================
-// 計算
-// =========================
-function calc(){
-    const f1 = s.f1;
-    const f2 = s.f2;
-
-    let r1, r4;
-
-    // 位置マクロのテキスト定義（頭割りと散開を分離）
-    const pos1_true_share  = "(TH:12時/DPS:6時)";
-    const pos1_true_spread = "(TH:2時or10時/DPS:4時or8時)";
-    const pos1_false_share  = "(TH:12時/DPS:6時)";
-    const pos1_false_spread = "(TH:2時or10時/DPS:4時or8時)";
-
-    const pos4_true_share  = "(TH:A/DPS:C)";
-    const pos4_true_spread = "(TH:D/DPS:B)";
-    const pos4_false_share  = "(TH:A/DPS:C)";
-    const pos4_false_spread = "(TH:D/DPS:B)";
-
-    // GC1の処理（水雷の早・遅の判定）
-    if (s.firstThunderEarly)
+            val =
